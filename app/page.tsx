@@ -1,34 +1,21 @@
-import { auth0 } from "@/lib/auth0";
-import LoginButton from "@/components/LoginButton";
+"use client";
+
+import WordleIcon from "@/components/WordleIcon";
+import WordleInitialStartInfo from "@/components/WordleInitialStartInfo";
+
+import { useState } from "react";
 
 async function page() {
-  const session = await auth0.getSession();
+  const [isPlaying, setPlaying] = useState(false);
 
   return (
     <>
-      <div className="size-19 grid grid-cols-3 gap-1 p-1 bg-neutral-900 rounded-md place-items-center">
-        <div className="size-5 bg-neutral-100 rounded-xs"></div>
-        <div className="size-5 bg-neutral-100 rounded-xs"></div>
-        <div className="size-5 bg-neutral-100 rounded-xs"></div>
-        <div className="size-5 bg-neutral-100 rounded-xs"></div>
-        <div className="size-5 bg-yellow-200 rounded-xs"></div>
-        <div className="size-5 bg-green-500 rounded-xs"></div>
-        <div className="size-5 bg-green-500 rounded-xs"></div>
-        <div className="size-5 bg-green-500 rounded-xs"></div>
-        <div className="size-5 bg-green-500 rounded-xs"></div>
-      </div>
-      <h1 className="text-neutral-950 text-5xl font-bold pt-2 tracking-tigher">
-        Wordle
-      </h1>
-      <h2 className="text-neutral-950 pt-4 text-3xl w-90 text-center">
-        Get 6 chances to guess a 5-letter word.
-      </h2>
-      <div className="py-5">
-        {!session && <LoginButton />}
-        <button className="outline-neutral-950 outline-1 bg-neutral-950 w-35 h-10 m-2 text-neutral-100 font-bold rounded-3xl">
-          Play
-        </button>
-      </div>
+      {!isPlaying && (
+        <>
+          <WordleIcon />
+          <WordleInitialStartInfo />{" "}
+        </>
+      )}
     </>
   );
 }
