@@ -1,22 +1,8 @@
-"use client";
-
-import WordleIcon from "@/components/WordleIcon";
-import WordleInitialStartInfo from "@/components/WordleInitialStartInfo";
-
-import { useState } from "react";
+import MainPage from "@/components/MainPage";
+import { auth0 } from "@/lib/auth0";
 
 async function page() {
-  const [isPlaying, setPlaying] = useState(false);
-
-  return (
-    <>
-      {!isPlaying && (
-        <>
-          <WordleIcon />
-          <WordleInitialStartInfo />{" "}
-        </>
-      )}
-    </>
-  );
+  const session = await auth0.getSession();
+  return <MainPage session={session} />;
 }
 export default page;

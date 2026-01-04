@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Code_Pro } from "next/font/google";
 import "./globals.css";
+import { PlayingContextProvider } from "@/components/PlayContext";
 
 const sourceCodePro = Source_Code_Pro({
   weight: "400",
@@ -19,13 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="stylesheet" href="./globals.css" />
-      </head>
-      <body>
-        <div className="place-items-center w-screen h-screen pt-[40vh] bg-neutral-100">
-          {children}
-        </div>
+      <body className="bg-neutral-100">
+        <PlayingContextProvider>{children}</PlayingContextProvider>
       </body>
     </html>
   );
