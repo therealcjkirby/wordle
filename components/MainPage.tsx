@@ -15,12 +15,12 @@ function MainPage({ session }: { session: AuthReturnType }) {
 
   return (
     <>
-      {!gameCtx.isPlaying && gameCtx.numberOfAttempts === 0 && (
+      {!gameCtx.isPlaying && gameCtx.roundNumber === 0 && (
         <StartingPage session={session} />
       )}
-      {!gameCtx.isPlaying &&
-        gameCtx.numberOfAttempts > 0 &&
-        !gameCtx.isGameOver && <ContinuePage />}
+      {!gameCtx.isPlaying && gameCtx.roundNumber > 0 && !gameCtx.isGameOver && (
+        <ContinuePage />
+      )}
 
       {gameCtx.isPlaying && <PlayingPage />}
     </>

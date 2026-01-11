@@ -1,12 +1,27 @@
 "use client";
 
+import { useContext } from "react";
+
+import PlayingContext from "@/components/PlayContext";
+
 type Props = {
   letter: string;
 };
 
 function Key({ letter }: Props) {
+  const gameCtx = useContext(PlayingContext);
+
   const handleClick = () => {
-    // alert(letter);
+    if (letter === "⌫") {
+      gameCtx.removeGuessedLetter();
+    }
+    if (letter !== "⌫" && letter !== "ENTER") {
+      gameCtx.setGuessedLetter(letter);
+    }
+    if (gameCtx.canSubmit(letter)) {
+      gameCtx.setRoundCount();
+      gameCtx.resetPosition();
+    }
   };
 
   return (

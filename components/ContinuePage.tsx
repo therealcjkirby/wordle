@@ -15,7 +15,7 @@ function ContinuePage() {
         Welcome Back!
       </h1>
       <h2 className="text-neutral-950 pt-4 text-3xl w-90 text-center">
-        You've made {gameCtx.numberOfAttempts} of 6 guesses. Keep it up!
+        You've made {gameCtx.roundNumber} of 6 guesses. Keep it up!
       </h2>
       <div className="py-5">
         <button

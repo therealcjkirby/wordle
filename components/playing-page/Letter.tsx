@@ -1,11 +1,16 @@
-"use client";
-
 type Props = {
   letter: string | null;
+  classes: string;
 };
 
-function Letter({}: Props) {
-  return <div className="attempt-letter"></div>;
+function Letter({ letter, classes }: Props) {
+  return (
+    <div className={classes}>
+      <p className="flex justify-center items-center size-14 text-xl">
+        {letter}
+      </p>
+    </div>
+  );
 }
 
 export default Letter;

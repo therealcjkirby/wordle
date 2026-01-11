@@ -11,15 +11,21 @@
     }
   }
   .attempt-container {
-    @apply grid grid-cols-5 gap-2 py-1;
+    @apply grid grid-cols-5 gap-2 py-1 select-none;
   }
   .attempt-letter {
-    @apply size-14 bg-white outline-2 outline-neutral-300;
+    @apply flex justify-center items-center size-14 bg-white outline-2 outline-neutral-300 text-neutral-950 font-semibold text-lg text-center align-middle;
   }
   .keyboard-container {
     @apply flex flex-col w-125;
   }
   .key-container {
-    @apply size-auto p-3 m-1 bg-gray-300 hover:outline-2 hover:outline-gray-400 text-neutral-950 font-semibold text-[20px] text-center rounded-md hover:cursor-pointer;
+    @apply size-auto p-3.5 m-1 bg-gray-300 hover:outline-2 hover:outline-gray-400 text-neutral-950 font-semibold text-[20px] text-center rounded-md hover:cursor-pointer;
+  }
+  .correct-letter {
+    @apply bg-[#c9b458];
+  }
+  .correct-let-and-pos {
+    @apply bg-[#58a351];
   }
 }
