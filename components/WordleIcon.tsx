@@ -15,7 +15,7 @@ function WordleIcon(props: IconProps) {
         height={props.size}
       />
       <h1
-        className={`text-neutral-950 ${props.twFontSize} font-bold pt-3 tracking-tigher`}
+        className={`text-neutral-950 ${props.twFontSize} font-bold pt-3 tracking-tighter`}
       >
         Wordle
       </h1>

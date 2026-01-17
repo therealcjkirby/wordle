@@ -1,21 +1,15 @@
 "use client";
 
 import { createContext, useState, useEffect, ReactNode } from "react";
-
-const initialStart = 0;
+import {
+  currentGameState,
+  currentGuesses,
+  currentRound,
+  currentUsedKeys,
+  KeyboardLetter,
+} from "@/store/LocalStorage";
 
 const ANSWER = "GRAVY";
-
-const attempts = [
-  [" ", " ", " ", " ", " "],
-  [" ", " ", " ", " ", " "],
-  [" ", " ", " ", " ", " "],
-  [" ", " ", " ", " ", " "],
-  [" ", " ", " ", " ", " "],
-  [" ", " ", " ", " ", " "],
-];
-
-type CellValue = string;
 
 type PlayingStats = {
   letterPosition: number;
@@ -24,6 +18,7 @@ type PlayingStats = {
   isGameOver: boolean;
   answer: string;
   attemptsList: string[][];
+  currentKeys: KeyboardLetter[];
   setPositionForward: () => void;
   setPositionBackward: () => void;
   resetPosition: () => void;
@@ -34,54 +29,37 @@ type PlayingStats = {
   removeGuessedLetter: () => void;
   checkIsValidLetter: (letterToCheck: string) => boolean;
   canSubmit: (letterToCheck: string) => boolean;
+  updateKeys: () => void;
 };
 
-const PlayingContext = createContext<PlayingStats>({
-  letterPosition: initialStart,
-  roundNumber: initialStart,
-  isPlaying: false,
-  isGameOver: false,
-  answer: ANSWER,
-  attemptsList: attempts,
-  setPositionForward: () => {},
-  setPositionBackward: () => {},
-  resetPosition: () => {},
-  setRoundCount: () => {},
-  setPlayingState: () => {},
-  setGameFinished: () => {},
-  setGuessedLetter: (letterToSet: string) => {},
-  removeGuessedLetter: () => {},
-  checkIsValidLetter: (answerToCheck: string) => {
-    return false;
-  },
-  canSubmit: (letterToCheck: string) => {
-    return false;
-  },
-});
+const PlayingContext = createContext<PlayingStats | null>(null);
 
 export function PlayingContextProvider({ children }: { children: ReactNode }) {
-  const [letterPos, setLetterPos] = useState(initialStart);
-  const [round, setRound] = useState(initialStart);
+  const [letterPos, setLetterPos] = useState(0);
+  const [round, setRound] = useState(currentRound);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isGameOver, setGameOver] = useState(false);
-  const [board, setBoard] = useState<string[][]>(attempts);
+  const [isGameOver, setGameOver] = useState(currentGameState);
+  const [board, setBoard] = useState<string[][]>(currentGuesses);
+  const [keys, setKeys] = useState(currentUsedKeys);
 
   useEffect(() => {
-    console.log("Position at the end of action: " + letterPos);
-    console.log(board);
-  }, [letterPos]);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("round", JSON.stringify(round));
+      localStorage.setItem("gameState", JSON.stringify(isGameOver));
+      localStorage.setItem("guesses", JSON.stringify(board));
+      localStorage.setItem("usedKeys", JSON.stringify(keys));
+    }
+  }, [round, isGameOver]);
 
   const setPositionForward = () => {
     if (letterPos < 4) {
       setLetterPos((prevPos) => (prevPos += 1));
-      console.log("moved forward");
     }
   };
 
   const setPositionBackward = () => {
     if (letterPos > 0) {
       setLetterPos((prevPos) => (prevPos -= 1));
-      console.log("moved backward");
     }
   };
 
@@ -132,13 +110,45 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     if (
       letterToCheck === "ENTER" &&
       letterPos === 4 &&
-      board[round][letterPos].length !== 0
+      board[round][letterPos].trim().length !== 0
     ) {
-      console.log("ITS TRUE");
       return true;
     }
 
     return false;
+  };
+
+  const updateKeys = () => {
+    const currentBoard = [...board];
+    const currentKeys = [...keys];
+
+    currentBoard.forEach((word) => {
+      word.forEach((letter) => {
+        if (letter !== " ") {
+          if (ANSWER.indexOf(letter) === word.indexOf(letter)) {
+            currentKeys[
+              currentKeys.findIndex((key) => key.letter === letter)
+            ]!.state = "correct letter and position";
+          }
+          if (
+            ANSWER.includes(letter) &&
+            currentKeys.find((key) => key.letter === letter)?.state !==
+              "correct letter and position"
+          ) {
+            currentKeys[
+              currentKeys.findIndex((key) => key.letter === letter)
+            ]!.state = "correct letter";
+          }
+          if (!ANSWER.includes(letter)) {
+            currentKeys[
+              currentKeys.findIndex((key) => key.letter === letter)
+            ]!.state = "used and incorrect";
+          }
+        }
+      });
+    });
+
+    setKeys(currentKeys);
   };
 
   const context = {
@@ -148,6 +158,7 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     isGameOver,
     answer: ANSWER,
     attemptsList: board,
+    currentKeys: keys,
     setPositionForward,
     setPositionBackward,
     resetPosition,
@@ -158,6 +169,7 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     removeGuessedLetter,
     checkIsValidLetter,
     canSubmit,
+    updateKeys,
   };
 
   return (

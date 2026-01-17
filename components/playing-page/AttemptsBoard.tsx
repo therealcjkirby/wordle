@@ -8,17 +8,17 @@ import PlayingContext from "@/components/PlayContext";
 function AttemptsBoard() {
   const gameCtx = useContext(PlayingContext);
 
-  const attempts = gameCtx.attemptsList;
+  const attempts = gameCtx!.attemptsList;
 
   const checkAnswer = (
     letterToCheck: string,
     rowIndex: number,
     colIndex: number,
   ): string => {
-    if (gameCtx.roundNumber > rowIndex) {
-      return gameCtx.answer[colIndex] === letterToCheck
+    if (gameCtx!.roundNumber > rowIndex) {
+      return gameCtx!.answer[colIndex] === letterToCheck
         ? "bg-green-800"
-        : gameCtx.answer.includes(letterToCheck)
+        : gameCtx!.answer.includes(letterToCheck)
           ? "bg-yellow-300"
           : "bg-gray-500";
     }

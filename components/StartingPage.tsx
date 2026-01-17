@@ -12,7 +12,7 @@ type AuthReturnType = Awaited<ReturnType<typeof auth0.getSession>>;
 
 function StartingPage({ session }: { session: AuthReturnType }) {
   const gameCtx = useContext(PlayingContext);
-  const setPlayingState = gameCtx.setPlayingState;
+  const setPlayingState = gameCtx!.setPlayingState;
 
   function handleClick() {
     setPlayingState();
