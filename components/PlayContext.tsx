@@ -7,7 +7,6 @@ import {
   currentRound,
   currentUsedKeys,
   gameResults,
-  gameAnswer,
   KeyboardLetter,
   Results,
 } from "@/store/LocalStorage";

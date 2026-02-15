@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Wordle Clone built by Xonin",
 };
 
+export const revalidate = 86400;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
