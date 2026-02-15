@@ -2,9 +2,10 @@
 
 import { useContext } from "react";
 
-import LoginButton from "@/components/LoginButton";
+import LoginButton from "@/components/starting-page/LoginButton";
 import WordleIcon from "@/components/WordleIcon";
 import PlayingContext from "@/components/PlayContext";
+import Button from "@/components/Button";
 
 import { auth0 } from "@/lib/auth0";
 
@@ -27,12 +28,9 @@ function StartingPage({ session }: { session: AuthReturnType }) {
         </h2>
         <div className="py-5">
           {!session && <LoginButton />}
-          <button
-            className="outline-neutral-950 outline-1 bg-neutral-950 hover:bg-neutral-800 hover:outline-neutral-800 w-35 h-10 m-2 text-neutral-100 font-bold rounded-3xl"
-            onClick={handleClick}
-          >
+          <Button color={"BLACK"} clickHandler={handleClick}>
             Play
-          </button>
+          </Button>
         </div>
       </div>
     </div>

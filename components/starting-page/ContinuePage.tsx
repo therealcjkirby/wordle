@@ -7,7 +7,10 @@ function ContinuePage() {
   const gameCtx = useContext(PlayingContext);
 
   return (
-    <div className="place-items-center w-screen h-screen bg-neutral-100 pt-[40vh]">
+    <div
+      className="place-items-center w-screen h-screen bg-neutral-100 pt-[40vh]"
+      suppressHydrationWarning
+    >
       <WordleIcon size={100} twFontSize="text-7xl" />
       <h1 className="text-neutral-950 text-5xl font-bold pt-2 tracking-tigher">
         Welcome Back!

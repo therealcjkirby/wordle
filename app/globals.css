@@ -26,6 +26,6 @@
     @apply bg-[#c9b458];
   }
   .correct-let-and-pos {
-    @apply bg-[#6aaa64];
+    @apply bg-green-500;
   }
 }

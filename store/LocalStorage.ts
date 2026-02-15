@@ -7,13 +7,16 @@ const attempts = [
   [" ", " ", " ", " ", " "],
 ];
 
+export type Results = "lost" | "won" | null;
+
 export type KeyboardLetter = {
   letter: string;
   state:
     | "unused"
     | "used and incorrect"
     | "correct letter"
-    | "correct letter and position";
+    | "correct letter and position"
+    | null;
 };
 
 const storedKeys: KeyboardLetter[] = [
@@ -36,7 +39,7 @@ const storedKeys: KeyboardLetter[] = [
   { letter: "J", state: "unused" },
   { letter: "K", state: "unused" },
   { letter: "L", state: "unused" },
-  { letter: "ENTER", state: "unused" },
+  { letter: "ENTER", state: null },
   { letter: "Z", state: "unused" },
   { letter: "X", state: "unused" },
   { letter: "C", state: "unused" },
@@ -44,7 +47,7 @@ const storedKeys: KeyboardLetter[] = [
   { letter: "B", state: "unused" },
   { letter: "N", state: "unused" },
   { letter: "M", state: "unused" },
-  { letter: "⌫", state: "unused" },
+  { letter: "⌫", state: null },
 ];
 
 export const currentRound = (): number => {
@@ -75,13 +78,13 @@ export const currentGuesses = (): string[][] => {
 
 export const currentGameState = (): boolean => {
   if (typeof window !== "undefined") {
-    const storedGameState = localStorage.getItem("gameState");
+    const storedGameState = localStorage.getItem("gameOver");
     if (storedGameState !== null) {
       return JSON.parse(storedGameState);
     }
   }
   if (typeof window !== "undefined") {
-    localStorage.setItem("gameState", JSON.stringify(false));
+    localStorage.setItem("gameOver", JSON.stringify(false));
   }
   return false;
 };
@@ -97,4 +100,30 @@ export const currentUsedKeys = (): KeyboardLetter[] => {
     localStorage.setItem("usedKeys", JSON.stringify(storedKeys));
   }
   return storedKeys;
+};
+
+export const gameResults = (): Results => {
+  if (typeof window !== "undefined") {
+    const storedGameResults = localStorage.getItem("gameResults");
+    if (storedGameResults !== null) {
+      return JSON.parse(storedGameResults);
+    }
+  }
+  if (typeof window !== "undefined") {
+    localStorage.setItem("gameResults", JSON.stringify(null));
+  }
+  return null;
+};
+
+export const gameAnswer = (): string => {
+  if (typeof window !== "undefined") {
+    const storedGameAnswer = localStorage.getItem("gameAnswer");
+    if (storedGameAnswer !== null) {
+      return JSON.parse(storedGameAnswer);
+    }
+  }
+  if (typeof window !== "undefined") {
+    localStorage.setItem("gameAnswer", JSON.stringify(null));
+  }
+  return "";
 };

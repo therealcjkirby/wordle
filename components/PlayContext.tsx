@@ -6,10 +6,11 @@ import {
   currentGuesses,
   currentRound,
   currentUsedKeys,
+  gameResults,
+  gameAnswer,
   KeyboardLetter,
+  Results,
 } from "@/store/LocalStorage";
-
-const ANSWER = "GRAVY";
 
 type PlayingStats = {
   letterPosition: number;
@@ -19,6 +20,7 @@ type PlayingStats = {
   answer: string;
   attemptsList: string[][];
   currentKeys: KeyboardLetter[];
+  results: Results;
   setPositionForward: () => void;
   setPositionBackward: () => void;
   resetPosition: () => void;
@@ -30,26 +32,41 @@ type PlayingStats = {
   checkIsValidLetter: (letterToCheck: string) => boolean;
   canSubmit: (letterToCheck: string) => boolean;
   updateKeys: () => void;
+  setGameWon: () => void;
+  setGameLost: () => void;
 };
 
 const PlayingContext = createContext<PlayingStats | null>(null);
 
-export function PlayingContextProvider({ children }: { children: ReactNode }) {
+type Props = {
+  children: ReactNode;
+  answer: string;
+};
+
+export function PlayingContextProvider({ children, answer }: Props) {
   const [letterPos, setLetterPos] = useState(0);
   const [round, setRound] = useState(currentRound);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGameOver, setGameOver] = useState(currentGameState);
   const [board, setBoard] = useState<string[][]>(currentGuesses);
   const [keys, setKeys] = useState(currentUsedKeys);
+  const [results, setResults] = useState(gameResults);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("round", JSON.stringify(round));
-      localStorage.setItem("gameState", JSON.stringify(isGameOver));
+      localStorage.setItem("gameOver", JSON.stringify(isGameOver));
       localStorage.setItem("guesses", JSON.stringify(board));
       localStorage.setItem("usedKeys", JSON.stringify(keys));
+      localStorage.setItem("gameResults", JSON.stringify(results));
     }
   }, [round, isGameOver]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("gameAnswer", answer);
+    }
+  }, []);
 
   const setPositionForward = () => {
     if (letterPos < 4) {
@@ -68,7 +85,7 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
   };
 
   const setRoundCount = () => {
-    round < 5 && setRound((prevRound) => prevRound + 1);
+    round <= 5 && setRound((prevRound) => prevRound + 1);
   };
 
   const setPlayingState = () => {
@@ -76,30 +93,34 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
   };
 
   const setGameFinished = () => {
-    setGameOver((prevState) => !prevState);
+    setGameOver(true);
   };
 
   const setGuessedLetter = (letterToSet: string) => {
     //
-    const updatedBoard = [...board];
-    if (letterPos < 4 && board[round][letterPos] !== " ") {
-      updatedBoard[round][letterPos + 1] = letterToSet;
-    } else if (board[round][letterPos] === " ") {
-      updatedBoard[round][letterPos] = letterToSet;
+    if (isGameOver == false) {
+      const updatedBoard = [...board];
+      if (letterPos < 4 && board[round][letterPos] !== " ") {
+        updatedBoard[round][letterPos + 1] = letterToSet;
+      } else if (board[round][letterPos] === " ") {
+        updatedBoard[round][letterPos] = letterToSet;
+      }
+      setBoard(updatedBoard);
+      setPositionForward();
     }
-    setBoard(updatedBoard);
-    setPositionForward();
   };
 
   const removeGuessedLetter = () => {
-    const updatedBoard = [...board];
-    if (letterPos > 0 && board[round][letterPos] === " ") {
-      updatedBoard[round][letterPos - 1] = " ";
-    } else {
-      updatedBoard[round][letterPos] = " ";
+    if (isGameOver == false) {
+      const updatedBoard = [...board];
+      if (letterPos > 0 && board[round][letterPos] === " ") {
+        updatedBoard[round][letterPos - 1] = " ";
+      } else {
+        updatedBoard[round][letterPos] = " ";
+      }
+      setBoard(updatedBoard);
+      setPositionBackward();
     }
-    setBoard(updatedBoard);
-    setPositionBackward();
   };
 
   const checkIsValidLetter = (letterToCheck: string) => {
@@ -125,13 +146,13 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     currentBoard.forEach((word) => {
       word.forEach((letter) => {
         if (letter !== " ") {
-          if (ANSWER.indexOf(letter) === word.indexOf(letter)) {
+          if (answer.indexOf(letter) === word.indexOf(letter)) {
             currentKeys[
               currentKeys.findIndex((key) => key.letter === letter)
             ]!.state = "correct letter and position";
           }
           if (
-            ANSWER.includes(letter) &&
+            answer.includes(letter) &&
             currentKeys.find((key) => key.letter === letter)?.state !==
               "correct letter and position"
           ) {
@@ -139,7 +160,7 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
               currentKeys.findIndex((key) => key.letter === letter)
             ]!.state = "correct letter";
           }
-          if (!ANSWER.includes(letter)) {
+          if (!answer.includes(letter)) {
             currentKeys[
               currentKeys.findIndex((key) => key.letter === letter)
             ]!.state = "used and incorrect";
@@ -151,14 +172,23 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     setKeys(currentKeys);
   };
 
+  const setGameWon = () => {
+    setResults("won");
+  };
+
+  const setGameLost = () => {
+    setResults("lost");
+  };
+
   const context = {
     letterPosition: letterPos,
     roundNumber: round,
     isPlaying,
-    isGameOver,
-    answer: ANSWER,
+    isGameOver: isGameOver,
+    answer: answer,
     attemptsList: board,
     currentKeys: keys,
+    results,
     setPositionForward,
     setPositionBackward,
     resetPosition,
@@ -170,6 +200,8 @@ export function PlayingContextProvider({ children }: { children: ReactNode }) {
     checkIsValidLetter,
     canSubmit,
     updateKeys,
+    setGameWon,
+    setGameLost,
   };
 
   return (

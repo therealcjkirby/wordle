@@ -15,12 +15,12 @@ function AttemptsBoard() {
     rowIndex: number,
     colIndex: number,
   ): string => {
-    if (gameCtx!.roundNumber > rowIndex) {
+    if (gameCtx!.roundNumber > rowIndex || gameCtx!.isGameOver) {
       return gameCtx!.answer[colIndex] === letterToCheck
-        ? "bg-green-800"
+        ? "bg-green-500"
         : gameCtx!.answer.includes(letterToCheck)
-          ? "bg-yellow-300"
-          : "bg-gray-500";
+          ? "bg-yellow-200"
+          : "bg-gray-400";
     }
     return " ";
   };

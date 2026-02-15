@@ -1,27 +1,25 @@
 import type { Metadata } from "next";
-import { Source_Code_Pro } from "next/font/google";
 import "./globals.css";
 import { PlayingContextProvider } from "@/components/PlayContext";
-
-const sourceCodePro = Source_Code_Pro({
-  weight: "400",
-  subsets: ["latin"],
-});
+import fetchNewWord from "@/lib/answer";
 
 export const metadata: Metadata = {
   title: "Wordle",
   description: "Wordle Clone built by Xonin",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const word = (await fetchNewWord()).toUpperCase();
   return (
     <html lang="en">
-      <body className="bg-neutral-100">
-        <PlayingContextProvider>{children}</PlayingContextProvider>
+      <body className={"bg-neutral-100"}>
+        <PlayingContextProvider answer={word}>
+          {children}
+        </PlayingContextProvider>
       </body>
     </html>
   );

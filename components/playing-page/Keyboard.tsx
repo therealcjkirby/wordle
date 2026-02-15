@@ -1,6 +1,7 @@
 import Key from "@/components/playing-page/Key";
 import PlayingContext from "../PlayContext";
 import { useEffect, useContext } from "react";
+import { gameWon } from "@/lib/utils";
 
 function Keyboard() {
   const gameCtx = useContext(PlayingContext);
@@ -16,16 +17,41 @@ function Keyboard() {
 
   const listener = (event: globalThis.KeyboardEvent) => {
     const key = event.key.toUpperCase();
-    if (key === "BACKSPACE") {
-      gameCtx!.removeGuessedLetter();
-    }
-    if (key !== "Backspace" && key !== "Enter" && /^[A-Z]$/i.test(key)) {
-      gameCtx!.setGuessedLetter(key);
-    }
-    if (gameCtx!.canSubmit(key)) {
-      gameCtx!.setRoundCount();
-      gameCtx!.resetPosition();
-      gameCtx!.updateKeys();
+    if (!gameCtx!.isGameOver) {
+      if (key === "BACKSPACE") {
+        gameCtx!.removeGuessedLetter();
+      }
+      if (key !== "Backspace" && key !== "Enter" && /^[A-Z]$/i.test(key)) {
+        gameCtx!.setGuessedLetter(key);
+      }
+      if (gameCtx!.canSubmit(key)) {
+        gameCtx!.updateKeys();
+
+        if (
+          gameWon(gameCtx!.attemptsList, gameCtx!.roundNumber, gameCtx!.answer)
+        ) {
+          gameCtx!.setGameFinished();
+          gameCtx!.setGameWon();
+        }
+
+        if (gameCtx!.roundNumber !== 5) {
+          gameCtx!.setRoundCount();
+          gameCtx!.resetPosition();
+        }
+
+        if (gameCtx!.roundNumber === 5) {
+          gameCtx!.setGameFinished();
+          if (
+            !gameWon(
+              gameCtx!.attemptsList,
+              gameCtx!.roundNumber,
+              gameCtx!.answer,
+            )
+          ) {
+            gameCtx!.setGameLost();
+          }
+        }
+      }
     }
   };
 
@@ -39,9 +65,15 @@ function Keyboard() {
 
   return (
     <div className="keyboard-container">
-      <div className="flex justify-center">{keyboardLaneOne}</div>
-      <div className="flex justify-center">{keyboardLaneTwo}</div>
-      <div className="flex justify-center">{keyboardLaneThree}</div>
+      <div className="flex justify-center" tabIndex={-1}>
+        {keyboardLaneOne}
+      </div>
+      <div className="flex justify-center" tabIndex={-1}>
+        {keyboardLaneTwo}
+      </div>
+      <div className="flex justify-center" tabIndex={-1}>
+        {keyboardLaneThree}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useContext, useEffect } from "react";
 
 import PlayingContext from "@/components/PlayContext";
+import { gameWon } from "@/lib/utils";
 
 type Props = {
   letter: string;
@@ -13,16 +14,41 @@ function Key({ letter }: Props) {
   const allKeys = gameCtx!.currentKeys;
 
   const handleClick = () => {
-    if (letter === "⌫") {
-      gameCtx!.removeGuessedLetter();
-    }
-    if (letter !== "⌫" && letter !== "ENTER") {
-      gameCtx!.setGuessedLetter(letter);
-    }
-    if (gameCtx!.canSubmit(letter)) {
-      gameCtx!.setRoundCount();
-      gameCtx!.resetPosition();
-      gameCtx!.updateKeys();
+    if (!gameCtx!.isGameOver) {
+      if (letter === "⌫") {
+        gameCtx!.removeGuessedLetter();
+      }
+      if (letter !== "⌫" && letter !== "Enter" && /^[A-Z]$/i.test(letter)) {
+        gameCtx!.setGuessedLetter(letter);
+      }
+      if (gameCtx!.canSubmit(letter)) {
+        gameCtx!.updateKeys();
+
+        if (
+          gameWon(gameCtx!.attemptsList, gameCtx!.roundNumber, gameCtx!.answer)
+        ) {
+          gameCtx!.setGameFinished();
+          gameCtx!.setGameWon();
+        }
+
+        if (gameCtx!.roundNumber !== 5) {
+          gameCtx!.setRoundCount();
+          gameCtx!.resetPosition();
+        }
+
+        if (gameCtx!.roundNumber === 5) {
+          gameCtx!.setGameFinished();
+          if (
+            !gameWon(
+              gameCtx!.attemptsList,
+              gameCtx!.roundNumber,
+              gameCtx!.answer,
+            )
+          ) {
+            gameCtx!.setGameLost();
+          }
+        }
+      }
     }
   };
 
@@ -38,19 +64,19 @@ function Key({ letter }: Props) {
       allKeys[allKeys.findIndex((key) => key.letter === letterToCheck)]
         .state === "correct letter and position"
     ) {
-      return standardContainer + " bg-green-800";
+      return standardContainer + " bg-green-500";
     }
     if (
       allKeys[allKeys.findIndex((key) => key.letter === letterToCheck)]
         .state === "correct letter"
     ) {
-      return standardContainer + " bg-yellow-300";
+      return standardContainer + " bg-yellow-200";
     }
     if (
       allKeys[allKeys.findIndex((key) => key.letter === letterToCheck)]
         .state === "used and incorrect"
     ) {
-      return standardContainer + " bg-gray-500";
+      return standardContainer + " bg-gray-400";
     }
     if (
       allKeys[allKeys.findIndex((key) => key.letter === letterToCheck)]
@@ -66,7 +92,11 @@ function Key({ letter }: Props) {
   }, [gameCtx!.roundNumber]);
 
   return (
-    <button onClick={handleClick} className={checkKeyType(letter)}>
+    <button
+      onClick={handleClick}
+      className={checkKeyType(letter)}
+      tabIndex={-1}
+    >
       <p className="select-none">{letter}</p>
     </button>
   );
